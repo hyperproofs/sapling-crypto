@@ -7,6 +7,7 @@ use super::group_hash::GroupHasher;
 use rand::{Rand, Rng};
 
 pub mod bn256;
+pub mod bls12;
 
 pub trait SBox<E: Engine>: Sized {
     fn apply(elements: &mut [E::Fr]);
