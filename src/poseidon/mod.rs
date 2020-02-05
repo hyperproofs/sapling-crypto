@@ -94,7 +94,7 @@ impl<E: Engine>SBox<E> for InversionSBox<E> {
 
 
 // TODO: Later use const functions
-pub trait PoseidonHashParams<E: Engine>: Sized {
+pub trait PoseidonHashParams<E: Engine>: Sized + Send + Sync {
     fn t(&self) -> u32;
     fn r_f(&self) -> u32;
     fn r_p(&self) -> u32;
