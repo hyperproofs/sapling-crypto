@@ -172,8 +172,7 @@ pub fn poseidon_mimc<E: PoseidonEngine>(
 
     let r_f = params.r_f();
     let r_p = params.r_p();
-    let post_full_rounds = r_f / 2;
-    let pre_full_rounds = r_f - post_full_rounds;
+    let pre_full_rounds = r_f - r_f / 2;
 
     for full_round in 0..pre_full_rounds {
         let round_constants = params.full_round_key(full_round);
@@ -214,7 +213,7 @@ pub fn poseidon_mimc<E: PoseidonEngine>(
 
     // reference implementation says that last round does not have matrix muptiplication step,
     // that is true due to ease of inversion
-    for full_round in pre_full_rounds..(post_full_rounds - 1) {
+    for full_round in pre_full_rounds..(r_f - 1) {
         let round_constants = params.full_round_key(full_round);
         for (el, c) in state.iter_mut().zip(round_constants.iter()) {
             el.add_assign(c);
@@ -233,7 +232,7 @@ pub fn poseidon_mimc<E: PoseidonEngine>(
     }
 
     {
-        let full_round = pre_full_rounds + post_full_rounds - 1;
+        let full_round = r_f - 1;
         let round_constants = params.full_round_key(full_round);
         for (el, c) in state.iter_mut().zip(round_constants.iter()) {
             el.add_assign(c);
