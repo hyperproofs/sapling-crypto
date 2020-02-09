@@ -262,6 +262,8 @@ fn poseidon_mimc_round<E: PoseidonEngine<SBox = QuinticSBox<E> >, CS>(
     let r_f = params.r_f();
     let r_p = params.r_p();
     let t = params.t();
+    let post_full_rounds = r_f / 2;
+    let pre_full_rounds = r_f - post_full_rounds;
 
     fn add_round_constants<E: PoseidonEngine, CS>(
         params: &E::Params,
@@ -286,7 +288,7 @@ fn poseidon_mimc_round<E: PoseidonEngine<SBox = QuinticSBox<E> >, CS>(
 
     // do releated applications of MDS and then round constants and s-boxes
 
-    for full_round in 0..(r_f-1) {
+    for full_round in 0..(pre_full_rounds - 1) {
         let s_box_applied = E::SBox::apply_sbox(
             cs.namespace(|| format!("apply s-box for full round {}", full_round)),
             &state[..]
@@ -382,7 +384,7 @@ fn poseidon_mimc_round<E: PoseidonEngine<SBox = QuinticSBox<E> >, CS>(
         round += 1;
     }
 
-    for full_round in r_f..(2*r_f - 1) {
+    for full_round in pre_full_rounds..(post_full_rounds - 1) {
         let s_box_applied = E::SBox::apply_sbox(
             cs.namespace(|| format!("apply s-box for full round {}", full_round)),
             &state[..]
@@ -403,9 +405,10 @@ fn poseidon_mimc_round<E: PoseidonEngine<SBox = QuinticSBox<E> >, CS>(
     }
 
     // for a final round we only apply s-box
+    let full_round = pre_full_rounds + post_full_rounds - 1;
 
     let state = E::SBox::apply_sbox(
-            cs.namespace(|| format!("apply s-box for full round {}", 2*r_f - 1)),
+            cs.namespace(|| format!("apply s-box for full round {}", full_round)),
             &state[..]
         )?;
 

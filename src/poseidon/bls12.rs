@@ -20,7 +20,7 @@ impl Bls12PoseidonParams {
     pub fn new<H: GroupHasher>() -> Self {
         let t = 6u32;
         let r_f = 8u32;
-        let r_p = 84u32;
+        let r_p = 57u32;
         let security_level = 126u32;
 
         Self::new_for_params::<H>(t, r_f, r_p, security_level)
@@ -179,12 +179,12 @@ mod test {
     use crate::group_hash::BlakeHasher;
 
     #[test]
-    fn test_generate_bn256_poseidon_params() {
+    fn test_generate_bls12_poseidon_params() {
         let params = Bls12PoseidonParams::new::<BlakeHasher>();
     }
 
     #[test]
-    fn test_bn256_poseidon_hash() {
+    fn test_bls12_poseidon_hash() {
         let rng = &mut thread_rng();
         let params = Bls12PoseidonParams::new::<BlakeHasher>();
         let input: Vec<Fr> = (0..params.t()).map(|_| rng.gen()).collect();
@@ -192,28 +192,4 @@ mod test {
         assert!(output.len() == 1);
     }
 
-    #[test]
-    fn test_print_bn256_poseidon_params_for_quartic_tree() {
-        let params = Bls12PoseidonParams::new_for_quartic_tree::<BlakeHasher>();
-        println!("MSD");
-        for el in params.mds_matrix.iter() {
-            println!("{}", el);
-        }
-        println!("Partial rounds constants");
-        for el in params.partial_round_keys.iter() {
-            println!("{}", el);
-        }
-        println!("Full rounds constants");
-        for el in params.full_round_keys.iter() {
-            println!("{}", el);
-        }
-    }
-
-    #[test]
-    fn test_print_bn256_poseidon_params_for_quartic_tree_hash_empty_input() {
-        let params = Bls12PoseidonParams::new_for_quartic_tree::<BlakeHasher>();
-        let input = vec![Fr::zero(); 4];
-        let output = poseidon_hash::<Bls12>(&params, &input);
-        println!("{}", output[0]);
-    }
 }
