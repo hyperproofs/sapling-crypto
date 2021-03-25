@@ -14,7 +14,7 @@ crate-type = ["lib", "staticlib"]
 
 [features]
 default = ["multicore"]
-multicore = ["bellman/multicore"]
+multicore = ["bellman/multicore", "bellman/nolog"]
 nightly = ["bellman/nightly"]
 wasm = ["bellman/wasm"]
 
